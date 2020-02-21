@@ -1,5 +1,5 @@
 // Require module for testing
-const ServiceObject = require('../src/ServiceObject.js');
+const PoodService = require('../src/pood-service');
 // Require pg
 const pg = require('pg');
 // Postgres can handle big numbers but JS can't, so fractions and decimals are converted to string when retrieved
