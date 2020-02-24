@@ -89,7 +89,7 @@ usersRouter
 
     // Validate gender
     const genderOption = ['female', 'male'];
-    if(criteria.gender !== null && genderOption.includes(criteria.gender)) {
+    if(criteria.gender !== null && !genderOption.includes(criteria.gender)) {
       return res.status(400).json({ error: `'Gender' value could only be either female or male`});
     }
     // Validate email and password
