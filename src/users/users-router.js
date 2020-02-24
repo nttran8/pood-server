@@ -89,7 +89,7 @@ usersRouter
 
     // Validate gender
     const genderOption = ['female', 'male'];
-    if(criteria.gender !== null && !genderOption.includes(criteria.gender)) {
+    if(criteria.gender !== null && genderOption.includes(criteria.gender)) {
       return res.status(400).json({ error: `'Gender' value could only be either female or male`});
     }
     // Validate email and password
@@ -101,6 +101,7 @@ usersRouter
           error: `Request body must include a value for '${field}'`
         });
       }
+      
     if (req.body.hasOwnProperty('password')) {
       const passwordError = UsersService.validatePassword(password);
       if (passwordError) {
@@ -109,7 +110,6 @@ usersRouter
       return UsersService.hashPassword(password)
         .then(hashedPW => {
           criteria.password = hashedPW;
-          console.log('criteria1',criteria);
           return updateUser(criteria, req, res, next);
         });
     }
@@ -119,11 +119,12 @@ usersRouter
 
 function updateUser(criteria, req, res, next) {
   // Complete building user object
-  let userToUpdate;
+  let userToUpdate = {};
   for (const [key, value] of Object.entries(criteria))
-    if (criteria[key] != undefined) {
-      userToUpdate = { [key]: value };
+    if (criteria[key] !== undefined) {
+      userToUpdate[key] = value;
     }
+    console.log(userToUpdate);
   
   const date_modified = new Date();
   userToUpdate.date_modified = date_modified;

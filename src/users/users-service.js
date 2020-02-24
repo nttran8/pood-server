@@ -29,7 +29,6 @@ const UsersService = {
 	},
 	// Update data
 	updateUser(knex, id, user) {
-    console.log(id, user);
     return knex('users')
       .where({ id })
       .update(user);
