@@ -127,7 +127,6 @@ function updateUser(criteria, req, res, next) {
     if (criteria[key] !== undefined) {
       userToUpdate[key] = value;
     }
-  console.log(userToUpdate);
 
   const date_modified = new Date();
   userToUpdate.date_modified = date_modified;

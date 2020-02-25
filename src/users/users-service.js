@@ -21,20 +21,20 @@ const UsersService = {
       .first()
       .then(user => !!user);
   },
-  // Get data by id
+  // Get user by id
   getUserById(knex, id) {
     return knex("users")
       .select("*")
       .where({ id })
       .first();
   },
-  // Update data
+  // Update user
   updateUser(knex, id, user) {
     return knex("users")
       .where({ id })
       .update(user);
   },
-  // Remove data
+  // Remove user
   deleteUser(knex, id) {
     return knex("users")
       .where({ id })
@@ -75,7 +75,7 @@ const UsersService = {
   // Validate email
   validateEmail(email) {
     if (!REGEX_Validation_email.test(email)) {
-      return "Email must contain a domain name such as name@example.com";
+      return "Email must contain a single @ followed by a domain name";
     }
     return null;
   }

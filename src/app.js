@@ -1,47 +1,42 @@
-//-------------------------------------- Import/require modules
 // Library
-require('dotenv').config();
-const express = require('express');
-const morgan = require('morgan');
-const cors = require('cors');
-const helmet = require('helmet');
+require("dotenv").config();
+const express = require("express");
+const morgan = require("morgan");
+const cors = require("cors");
+const helmet = require("helmet");
 
-const { NODE_ENV } = require('./config');
+// Environment Variable
+const { NODE_ENV } = require("./config");
 
 // Router
-const usersRouter = require('./users/users-router');
-const logsRouter = require('./logs/logs-router');
-const authRouter = require('./auth/auth-router');
+const usersRouter = require("./users/users-router");
+const logsRouter = require("./logs/logs-router");
+const authRouter = require("./auth/auth-router");
 
 const app = express();
 
-const morganOption = (NODE_ENV === 'production')
-  ? 'tiny'
-  : 'common';
+const morganOption = NODE_ENV === "production" ? "tiny" : "common";
 
-
-
-//-------------------------------------- Mounting our middleware
+// Mounting middleware
 app.use(morgan(morganOption));
 app.use(helmet());
 app.use(cors());
 
-//-------------------------------------- Endpoints configuration
-app.use('/api/users', usersRouter);
-app.use('/api/logs', logsRouter);
-app.use('/api/auth', authRouter); 
-
+// Endpoints configuration
+app.use("/api/users", usersRouter);
+app.use("/api/logs", logsRouter);
+app.use("/api/auth", authRouter);
 
 // Generate error response if any
 app.use(function errorHandler(error, req, res, next) {
   let response;
-   if (NODE_ENV === 'production') {
-     response = { error: { message: 'server error' } };
-   } else {
-     console.error(error);
-     response = { message: error.message, error };
-   }
-   res.status(500).json(response);
- });
+  if (NODE_ENV === "production") {
+    response = { error: { message: "server error" } };
+  } else {
+    console.error(error);
+    response = { message: error.message, error };
+  }
+  res.status(500).json(response);
+});
 
 module.exports = app;
