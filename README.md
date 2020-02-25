@@ -24,6 +24,6 @@ https://pood-app.now.sh/
 ## API Features
 
 - Register, update, delete users
-- Create, update, delete logs,
+- Create, read, update, delete logs,
 - Authenticate
 - Maintain session with token
