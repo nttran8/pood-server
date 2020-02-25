@@ -15,13 +15,20 @@ const jsonBodyParser = express.json();
 usersRouter.route("/").post(jsonBodyParser, (req, res, next) => {
   const { email, username, password } = req.body;
 
-  // Validate data
+  // Validate existence of required data
   for (const field of ["email", "username", "password"])
     if (!req.body[field]) {
       return res.status(400).json({
         error: `Request body must include ${field}`
       });
     }
+
+  // Validate email
+  const emailError = UsersService.validateEmail(email);
+  if (emailError) {
+    return res.status(400).json({ error: emailError });
+  }
+
   // Validate password
   const passwordError = UsersService.validatePassword(password);
   if (passwordError) {
