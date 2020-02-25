@@ -1,21 +1,29 @@
-# Poo'd Client Repository
+# Overview
 
-## Mission Statement
+Poo'd app is an online stool diary that enable users to log their daily stool and maintain gut health.
 
-To promote
-## Vision Statement
+This app is made for everyone of all ages. Parents can use the app to log their newborn's stool and users with medical needs can use to monitor their gut health.
 
-A world of doo-ers.
+## Live App/Client Repository
 
-## Features
+https://pood-app.now.sh/
 
-Features
-  1. Register, update, delete users
-  2. Create, update, delete logs,
-  3. Authenticate
-  4. Maintain session with token
+## Technology used
 
+- HTML
+- Figma
+- CSS
+- Javascript
+- React
+- Express
+- Node
+- Knex
+- PostgreSQL
+- JSONWebtoken
 
+## API Features
 
-
-
+- Register, update, delete users
+- Create, update, delete logs,
+- Authenticate
+- Maintain session with token
