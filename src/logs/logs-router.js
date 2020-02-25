@@ -41,9 +41,9 @@ logsRouter
 
     // Validate if required data is provided
     for (const [key, value] of Object.entries(newLog))
-      if (value == null) {
+      if (value === null || value === "") {
         return res.status(400).json({
-          error: `Request body must contain '${key}'`
+          error: `'${key}' is required.`
         });
       }
 

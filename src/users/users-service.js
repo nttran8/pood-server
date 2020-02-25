@@ -64,7 +64,7 @@ const UsersService = {
       return "Password must not start or end with empty spaces";
     }
     if (!REGEX_Validation_pw.test(password)) {
-      return "Password must contain 1 uppercase, 1 lowercase, 1 number, and 1 special character - !@#$%^&";
+      return "Password must contain 1 uppercase, 1 lowercase, 1 number, and 1 special character !@#$%^&";
     }
     return null;
   },
