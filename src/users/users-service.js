@@ -58,13 +58,13 @@ const UsersService = {
       return "Password must be longer than 8 characters";
     }
     if (password.length > 72) {
-      return "Password must be lessthan 72 characters";
+      return "Password must be less than 72 characters";
     }
     if (password.startsWith(" ") || password.endsWith(" ")) {
       return "Password must not start or end with empty spaces";
     }
     if (!REGEX_Validation_pw.test(password)) {
-      return "Password must contain 1 uppercase, lowercase, number, and special character";
+      return "Password must contain 1 uppercase, 1 lowercase, 1 number, and 1 special character - !@#$%^&";
     }
     return null;
   },

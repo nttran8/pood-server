@@ -23,28 +23,27 @@ usersRouter.route("/").post(jsonBodyParser, (req, res, next) => {
       });
     }
 
-  // Validate email
-  const emailError = UsersService.validateEmail(email);
-  if (emailError) {
-    return res.status(400).json({ error: emailError });
-  }
-
-  // Validate password
-  const passwordError = UsersService.validatePassword(password);
-  if (passwordError) {
-    return res.status(400).json({ error: passwordError });
-  }
-
-  // Validate username existence
   UsersService.checkUsername(req.app.get("db"), username)
     .then(usernameExist => {
-      // Return error if username exist
+      // Validate username existence
       if (usernameExist) {
         return res.status(400).json({ error: `Username already taken` });
       }
 
+      // Validate email
+      const emailError = UsersService.validateEmail(email);
+      if (emailError) {
+        return res.status(400).json({ error: emailError });
+      }
+
+      // Validate password
+      const passwordError = UsersService.validatePassword(password);
+      if (passwordError) {
+        return res.status(400).json({ error: passwordError });
+      }
+
+      // Hash password
       return UsersService.hashPassword(password).then(hashedPW => {
-        // Put together new user object
         const newUser = {
           email: email.toLowerCase(),
           username,
