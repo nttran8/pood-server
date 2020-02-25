@@ -84,13 +84,13 @@ usersRouter
 
     // Validate gender
     const genderOption = ["female", "male"];
-    if (criteria.gender !== null && !genderOption.includes(criteria.gender)) {
+    if (criteria.gender != null && !genderOption.includes(criteria.gender)) {
       return res
         .status(400)
         .json({ error: `'Gender' value could only be either female or male` });
     }
-    // Validate email and password
     criteria.email = email.toLowerCase();
+
     // Return error if the above field is included but empty in the request body
     for (const field of ["email", "password"])
       if (req.body.hasOwnProperty(field) && !req.body[field]) {
@@ -99,10 +99,18 @@ usersRouter
         });
       }
 
+    // Validate email
+    if (req.body.hasOwnProperty("email")) {
+      const emailError = UsersService.validateEmail(email);
+      if (emailError) {
+        return res.status(400).json({ error: emailError });
+      }
+    }
+
     if (req.body.hasOwnProperty("password")) {
       const passwordError = UsersService.validatePassword(password);
       if (passwordError) {
-        return res.status(400).json({ passwordError });
+        return res.status(400).json({ error: passwordError });
       }
       return UsersService.hashPassword(password).then(hashedPW => {
         criteria.password = hashedPW;
