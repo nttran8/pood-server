@@ -43,7 +43,7 @@ logsRouter
     for (const [key, value] of Object.entries(newLog))
       if (value === null || value === "") {
         return res.status(400).json({
-          error: `'${key}' is required.`
+          error: `'${key}' is required`
         });
       }
 
