@@ -3,8 +3,8 @@
 An open-source RESTful API created to support the following features:
 
 - Register, update, delete users
-- Create, read, update, delete logs
-- Authenticate
+- Create, update, delete logs
+- Authenticate user that also retrieve user's information and logs
 - Maintain session with token
 - Grant refresh token
 
@@ -30,7 +30,7 @@ An open-source RESTful API created to support the following features:
 
 ### /api/users
 
-| Title            | Create Users                                                                                                                                                                                                              |
+| Title            | Create User                                                                                                                                                                                                               |
 | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | URL              | /api/users                                                                                                                                                                                                                |
 | Method           | POST                                                                                                                                                                                                                      |
@@ -47,7 +47,7 @@ An open-source RESTful API created to support the following features:
 | Error Response   | Code: 400 Bad Request<br>Content: {error: "Password must not start or end with empty spaces"}                                                                                                                             |
 | Error Response   | Code: 400 Bad Request<br>Content: {error: "Password must contain 1 uppercase, 1 lowercase, 1 number, and 1 special character !@#\$%^&"}                                                                                   |
 
-| Title            | Update Users                                                                                                                            |
+| Title            | Update User                                                                                                                             |
 | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
 | URL              | /api/users/:id                                                                                                                          |
 | Method           | PATCH                                                                                                                                   |
@@ -65,7 +65,7 @@ An open-source RESTful API created to support the following features:
 | Error Response   | Code: 400 Bad Request<br>Content: {error: "Password must contain 1 uppercase, 1 lowercase, 1 number, and 1 special character !@#\$%^&"} |
 | Error Response   | Code: 401 Unauthorized<br>Content: {error: "Missing bearer token"}                                                                      |
 
-| Title            | Delete Users                                                     |
+| Title            | Delete User                                                      |
 | ---------------- | ---------------------------------------------------------------- |
 | URL              | /api/users/:id                                                   |
 | Method           | DELETE                                                           |
@@ -76,7 +76,7 @@ An open-source RESTful API created to support the following features:
 
 ### /api/logs
 
-| Title            | Create Logs                                                                                                                                                                              |
+| Title            | Create Log                                                                                                                                                                               |
 | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | URL              | /api/logs                                                                                                                                                                                |
 | Method           | POST                                                                                                                                                                                     |
@@ -90,4 +90,16 @@ An open-source RESTful API created to support the following features:
 | Error Response   | Code: 400 Bad Request<br>Content: {error: "amount is required"}                                                                                                                          |  | Error Response | Code: 400 Bad Request<br>Content: {error: "style value could only be one of the following options: 1, 2, 3, 4, 5, 6, 7"} |
 | Error Response   | Code: 400 Bad Request<br>Content: {error: "color value could only be one of the following options: black, brown, green, yellow, gray, red"}                                              |
 | Error Response   | Code: 400 Bad Request<br>Content: {error: "amount value could only be one of the following options: little, normal, a lot"}                                                              |
+| Error Response   | Code: 400 Bad Request<br>Content: {error: "style value could only be one of the following options: 1,2,3,4,5,6,7"}                                                                       |
 | Error Response   | Code: 401 Unauthorized<br>Content: {error: "Missing bearer token"}                                                                                                                       |
+
+| Title            | Get All Logs                                                     |
+| ---------------- | ---------------------------------------------------------------- |
+| URL              | /api/logs                                                        |
+| Method           | GET                                                              |
+| URL Params       | None                                                             |
+| Data Params      | None                                                             |
+| Success Response | Code: 204                                                        |
+| Error Response   | Code: 401 Unauthorized<br>Content: {error: "Cannot delete user"} |
+
+### /api/auth

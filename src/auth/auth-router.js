@@ -12,7 +12,6 @@ const jsonBodyParser = express.json();
 authRouter.post("/login", jsonBodyParser, (req, res, next) => {
   const { username, password } = req.body;
   const authUser = { username, password };
-  console.log(authUser);
 
   // Check for existence of username and password in request body
   for (const [key, value] of Object.entries(authUser))
