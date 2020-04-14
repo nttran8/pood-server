@@ -10,14 +10,27 @@ An open-source RESTful API created to support the following features:
 
 ## Tech Stack
 
+Server
+
 - Javascript
 - Express
 - Node
 - Knex
-- PostgreSQL
 - JSONWebtoken
 - BCrypt
 - XSS
+
+Data Persistence
+
+- PostgreSQL
+
+Development Tools
+
+- Mocha
+- Chai
+- Supertest
+- Postgrator
+- VScode
 
 ## Endpoints
 
