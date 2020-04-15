@@ -100,7 +100,7 @@ Development Tools
 | Error Response   | Code: 400 Bad Request<br>Content: {error: "date_created is required"}                                                                                                                    |
 | Error Response   | Code: 400 Bad Request<br>Content: {error: "style is required"}                                                                                                                           |
 | Error Response   | Code: 400 Bad Request<br>Content: {error: "color is required"}                                                                                                                           |
-| Error Response   | Code: 400 Bad Request<br>Content: {error: "amount is required"}                                                                                                                          |  | Error Response | Code: 400 Bad Request<br>Content: {error: "style value could only be one of the following options: 1, 2, 3, 4, 5, 6, 7"} |
+| Error Response   | Code: 400 Bad Request<br>Content: {error: "amount is required"}                                                                                                                          |
 | Error Response   | Code: 400 Bad Request<br>Content: {error: "color value could only be one of the following options: black, brown, green, yellow, gray, red"}                                              |
 | Error Response   | Code: 400 Bad Request<br>Content: {error: "amount value could only be one of the following options: little, normal, a lot"}                                                              |
 | Error Response   | Code: 400 Bad Request<br>Content: {error: "style value could only be one of the following options: 1,2,3,4,5,6,7"}                                                                       |
@@ -115,4 +115,49 @@ Development Tools
 | Success Response | Code: 204                                                        |
 | Error Response   | Code: 401 Unauthorized<br>Content: {error: "Cannot delete user"} |
 
+| Title            | Delete Log                                                      |
+| ---------------- | --------------------------------------------------------------- |
+| URL              | /api/logs/:id                                                   |
+| Method           | DELETE                                                          |
+| URL Params       | Required:<br>id=[integer]                                       |
+| Data Params      | None                                                            |
+| Success Response | Code: 204                                                       |
+| Error Response   | Code: 404 Unauthorized<br>Content: {error: "Log doesn't exist"} |
+
+| Title            | Update Log                                                                                                                     |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| URL              | /api/logs/:id                                                                                                                  |
+| Method           | PATCH                                                                                                                          |
+| URL Params       | Required:<br>id=[integer]                                                                                                      |
+| Data Params      | {<br>nickname: [string],<br> note: [string],<br> style: [enum],<br> color: [enum],<br> amount: [enum]<br>}                     |
+| Success Response | Code: 204                                                                                                                      |
+| Error Response   | Code: 404 Unauthorized<br>Content: {error: "Log doesn't exist"}                                                                |
+| Error Response   | Code: 400 Bad Request<br>Content: {error: "Request body must contain either 'nickname', 'note', 'style, 'color', or 'amount'"} |
+
+| Error Response | Code: 400 Bad Request<br>Content: {error: "color value could only be one of the following options: black, brown, green, yellow, gray, red"} |
+
+| Error Response | Code: 400 Bad Request<br>Content: {error: "amount value could only be one of the following options: little, normal, a lot"} |
+
+| Error Response | Code: 400 Bad Request<br>Content: {error: "style value could only be one of the following options: 1,2,3,4,5,6,7"} |
+
 ### /api/auth
+
+| Title            | Get Token                                                                                                                                                                                       |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| URL              | /api/auth/login                                                                                                                                                                                 |
+| Method           | POST                                                                                                                                                                                            |
+| URL Params       | None                                                                                                                                                                                            |
+| Data Params      | {<br>username:"jess_123",<br>password:"samplePW1234#"<br>}                                                                                                                                      |
+| Success Response | Code: 200<br>Content:{authToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"} |
+| Error Response   | Code: 400 Bad Request<br>Content: {error: "Please include 'username' in the body"}                                                                                                              |
+| Error Response   | Code: 400 Bad Request<br>Content: {error: "Please include 'password' in the body"}                                                                                                              |
+| Error Response   | Code: 400 Bad Request<br>Content: {error: "Username or password is incorrect"}                                                                                                                  |
+
+| Title            | Get Refresh Token                                                                                                                                                                               |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| URL              | /api/auth/refresh                                                                                                                                                                               |
+| Method           | POST                                                                                                                                                                                            |
+| URL Params       | None                                                                                                                                                                                            |
+| Data Params      | None                                                                                                                                                                                            |
+| Success Response | Code: 200<br>Content:{authToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"} |
+| Error Response   | Code: 401 Unauthorized<br>Content: {error: "Missing bearer token"}                                                                                                                              |
