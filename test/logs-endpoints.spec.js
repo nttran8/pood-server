@@ -23,13 +23,22 @@ describe("Logs Endpoints", function() {
 
   describe(`GET /api/logs`, () => {
     context(`Given user has no logs`, () => {
+      beforeEach("Insert users", () => helpers.seedUsers(db, testUsers));
+
       it(`Responds with 200 and an empty list`, () => {
+        const testUser = helpers.createUsers()[1];
         return supertest(app)
           .get("/api/logs")
-          .set(
-            "Authorization",
-            helpers.makeAuthHeader(helpers.createUsers()[1]).expect(200, [])
-          );
+          .set("Authorization", helpers.makeAuthHeader(testUser))
+          .expect(200)
+          .expect(res => {
+            expect(res.body.logs).to.eql([]);
+            expect(res.body.user.email).to.eql(testUser.email);
+            expect(res.body.user.fullname).to.eql(testUser.fullname);
+            expect(res.body.user.username).to.eql(testUser.username);
+            expect(res.body.user.gender).to.eql(testUser.gender);
+            expect(res.body.user.id).to.eql(testUser.id);
+          });
       });
     });
 
@@ -40,13 +49,18 @@ describe("Logs Endpoints", function() {
 
       it("Responds with 200 and all of the logs", () => {
         const testUser = helpers.createUsers()[0];
-        const expectedLogs = testLogs.filter(
-          log => log.user_id === testUser.id
-        );
+        let expectedLogs = testLogs.filter(log => log.user_id === testUser.id);
+        expectedLogs.forEach(log => delete log.date_created);
+
         return supertest(app)
           .get("/api/logs")
           .set("Authorization", helpers.makeAuthHeader(testUser))
-          .expect(200, expectedLogs);
+          .expect(200)
+          .expect(res => {
+            let resultedLogs = res.body.logs;
+            resultedLogs.forEach(log => delete log.date_created);
+            expect(resultedLogs).to.eql(expectedLogs);
+          });
       });
     });
 
@@ -62,12 +76,12 @@ describe("Logs Endpoints", function() {
 
       it("Removes XSS attack content from log", () => {
         return supertest(app)
-          .get(`/api/articles`)
+          .get(`/api/logs`)
           .set("Authorization", helpers.makeAuthHeader(testUser))
           .expect(200)
           .expect(res => {
-            expect(res.body[0].nickname).to.eql(expectedLog.nickname);
-            expect(res.body[0].note).to.eql(expectedLog.note);
+            expect(res.body.logs[0].nickname).to.eql(expectedLog.nickname);
+            expect(res.body.logs[0].note).to.eql(expectedLog.note);
           });
       });
     });
@@ -75,7 +89,9 @@ describe("Logs Endpoints", function() {
 
   describe(`POST /api/logs`, () => {
     context("Log validation", () => {
-      beforeEach("Insert users", () => helpers.seedUsers(db, testUsers));
+      beforeEach("Insert logs", () =>
+        helpers.seedLogs(db, testUsers, testLogs)
+      );
 
       const requiredFields = [
         "nickname",
@@ -86,11 +102,10 @@ describe("Logs Endpoints", function() {
       ];
 
       requiredFields.forEach(field => {
-        const testLog = testLog[0];
+        const testLog = testLogs[0];
         const testUser = testUsers[0];
         const newLog = {
           nickname: "Stinky",
-          date_created: new Date("2029-01-22T16:28:32.615Z"),
           style: "1",
           color: "yellow",
           amount: "a lot"
@@ -99,6 +114,7 @@ describe("Logs Endpoints", function() {
         it(`Responds 400 required error when '${field}' is missing`, () => {
           delete newLog[field];
 
+          console.log(newLog);
           return supertest(app)
             .post("/api/logs")
             .set("Authorization", helpers.makeAuthHeader(testUser))
@@ -120,10 +136,10 @@ describe("Logs Endpoints", function() {
 
         return supertest(app)
           .post("/api/logs")
-          .set("Authorization", helpers.makeAuthHeader(testUser))
+          .set("Authorization", helpers.makeAuthHeader(testUsers[0]))
           .send(logInvalidColor)
           .expect(400, {
-            error: `color value could only be one of the following options: black, brown, green, yellow, gray, red`
+            error: `'color' value could only be one of the following options: black,brown,green,yellow,gray,red`
           });
       });
 
@@ -138,10 +154,10 @@ describe("Logs Endpoints", function() {
 
         return supertest(app)
           .post("/api/logs")
-          .set("Authorization", helpers.makeAuthHeader(testUser))
+          .set("Authorization", helpers.makeAuthHeader(testUsers[0]))
           .send(logInvalidAmount)
           .expect(400, {
-            error: `amount value could only be one of the following options: little, normal, a lot`
+            error: `'amount' value could only be one of the following options: little,normal,a lot`
           });
       });
 
@@ -156,15 +172,16 @@ describe("Logs Endpoints", function() {
 
         return supertest(app)
           .post("/api/logs")
-          .set("Authorization", helpers.makeAuthHeader(testUser))
+          .set("Authorization", helpers.makeAuthHeader(testUsers[0]))
           .send(logInvalidStyle)
           .expect(400, {
-            error: `style value could only be one of the following options: 1, 2, 3, 4, 5, 6, 7`
+            error: `'style' value could only be one of the following options: 1,2,3,4,5,6,7`
           });
       });
     });
 
     context("Happy path", () => {
+      beforeEach("Insert users", () => helpers.seedUsers(db, testUsers));
       it("Responds 201 and newly created and serialized log", () => {
         const testLog = testLog[0];
         const testUser = testUsers[0];
@@ -251,11 +268,9 @@ describe("Logs Endpoints", function() {
     });
 
     context("Given log exist", () => {
-      beforeEach(() => helpers.seedLogs(db, testUsers, testLogs));
+      before(() => helpers.seedLogs(db, testUsers, testLogs));
 
       context("Log validation", () => {
-        beforeEach("Insert users", () => helpers.seedUsers(db, testUsers));
-
         it(`Responds 400 "Request body must contain either 'nickname', 'note', 'style, 'color', or 'amount'" when request body is invalid`, () => {
           const requiredFields = [
             "nickname",
@@ -283,6 +298,8 @@ describe("Logs Endpoints", function() {
           const testUser = testUsers[0];
           const logInvalidColor = {
             id: 1,
+            style: "4",
+            amount: "a lot",
             color: "white"
           };
 
@@ -291,7 +308,7 @@ describe("Logs Endpoints", function() {
             .set("Authorization", helpers.makeAuthHeader(testUser))
             .send(logInvalidColor)
             .expect(400, {
-              error: `color value could only be one of the following options: black, brown, green, yellow, gray, red`
+              error: `'color' value could only be one of the following options: black,brown,green,yellow,gray,red`
             });
         });
 
@@ -299,7 +316,9 @@ describe("Logs Endpoints", function() {
           const testUser = testUsers[0];
           const logInvalidAmount = {
             id: 1,
-            amount: "something"
+            style: "4",
+            amount: "something",
+            color: "yellow"
           };
 
           return supertest(app)
@@ -307,7 +326,7 @@ describe("Logs Endpoints", function() {
             .set("Authorization", helpers.makeAuthHeader(testUser))
             .send(logInvalidAmount)
             .expect(400, {
-              error: `amount value could only be one of the following options: little, normal, a lot`
+              error: `'amount' value could only be one of the following options: little,normal,a lot`
             });
         });
 
@@ -315,7 +334,9 @@ describe("Logs Endpoints", function() {
           const testUser = testUsers[0];
           const logInvalidStyle = {
             id: 1,
-            style: "0"
+            style: "0",
+            amount: "little",
+            color: "yellow"
           };
 
           return supertest(app)
@@ -323,14 +344,14 @@ describe("Logs Endpoints", function() {
             .set("Authorization", helpers.makeAuthHeader(testUser))
             .send(logInvalidStyle)
             .expect(400, {
-              error: `style value could only be one of the following options: 1, 2, 3, 4, 5, 6, 7`
+              error: `'style' value could only be one of the following options: 1,2,3,4,5,6,7`
             });
         });
       });
 
       context("Happy path", () => {
         it("Responds 204", () => {
-          let testLog = testLog[0];
+          let testLog = testLogs[0];
           const testUser = testUsers[0];
 
           // Update fields that can be changed
@@ -353,11 +374,11 @@ describe("Logs Endpoints", function() {
                 .where({ id: testLog.id })
                 .first()
                 .then(row => {
-                  expect(row.nickname).to.eql(newLog.nickname);
-                  expect(row.note).to.eql(newLog.note);
-                  expect(row.style).to.eql(newLog.style);
-                  expect(row.color).to.eql(newLog.color);
-                  expect(row.amount).to.eql(newLog.amount);
+                  expect(row.nickname).to.eql(testLog.nickname);
+                  expect(row.note).to.eql(testLog.note);
+                  expect(row.style).to.eql(testLog.style);
+                  expect(row.color).to.eql(testLog.color);
+                  expect(row.amount).to.eql(testLog.amount);
                 })
             );
         });

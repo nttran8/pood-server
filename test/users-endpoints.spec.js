@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 const app = require("../src/app");
 const helpers = require("./test-helpers");
 
-describe("Users endpoints", function() {
+describe.only("Users endpoints", function() {
   let db;
 
   const { testUsers } = helpers.createLogsFixtures();
@@ -44,7 +44,7 @@ describe("Users endpoints", function() {
             .post("/api/users")
             .send(registerAttemptBody)
             .expect(400, {
-              error: `Request body must include '${field}'`
+              error: `Request body must include ${field}`
             });
         });
       });
@@ -191,7 +191,7 @@ describe("Users endpoints", function() {
               .then(row => {
                 expect(row.username).to.eql(newUser.username);
                 expect(row.email).to.eql(newUser.email);
-                expect(row.fullname).to.eql("");
+                expect(row.fullname).to.eql(null);
                 expect(row.date_modified).to.eql(null);
                 expect(row.gender).to.eql(null);
                 const expectedDate = new Date().toLocaleString("en", {

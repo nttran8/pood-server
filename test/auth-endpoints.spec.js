@@ -28,20 +28,21 @@ describe("Auth endpoints", function() {
 
     const requiredFields = ["username", "password"];
 
+    // Return error if username or password is missing
     requiredFields.forEach(field => {
       const loginAttemptBody = {
         username: testUser.username,
         password: testUser.password
       };
 
-      it.only(`Responds with 400 required error when '${field}' is missing`, () => {
+      it(`Responds with 400 required error when '${field}' is missing`, () => {
         delete loginAttemptBody[field];
 
         return supertest(app)
           .post("/api/auth/login")
           .send(loginAttemptBody)
           .expect(400, {
-            error: `Missing '${field}' in request body`
+            error: `Please include '${field}' in the body`
           });
       });
     });
@@ -71,10 +72,11 @@ describe("Auth endpoints", function() {
         password: testUser.password
       };
       const expectedToken = jwt.sign(
-        { userid: testUser.id },
-        process.env.JWT_SECRET,
+        { user_id: testUser.id }, // payload
+        process.env.JWT_SECRET, // secret
         {
-          subject: testUser.username,
+          subject: testUser.username, // sub
+          expiresIn: "7d",
           algorithm: "HS256"
         }
       );

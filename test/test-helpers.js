@@ -94,15 +94,13 @@ function createLogs(users) {
   ];
 }
 
-function createExpectedLog(users, log) {
-  const owner = users.find(user => user.id === log.user_id);
-
+function createExpectedLog(user, log) {
   return {
-    id: id,
+    id: log.id,
     nickname: log.nickname,
     note: log.note,
     date_created: log.date_created,
-    user_id: owner.id,
+    user_id: user.id,
     style: log.style,
     color: log.color,
     amount: log.amount
@@ -112,9 +110,8 @@ function createExpectedLog(users, log) {
 function createMaliciousLog(user) {
   const maliciousLog = {
     id: 10,
-    nickname:
-      "Malicious image <img src='https://thisisabad.site/siteisfake' onerror='alert(document.cookie);'>.",
-    note: "Very malicious script <script>alert('xss');</script>",
+    nickname: `Malicious image <img src="https://thisisabad.site/siteisfake" onerror="alert(document.cookie);">.`,
+    note: `Very malicious script <script>alert("xss");</script>`,
     user_id: user.id,
     date_created: new Date("2029-01-22T16:28:32.615Z"),
     style: "3",
@@ -122,10 +119,9 @@ function createMaliciousLog(user) {
     amount: "a lot"
   };
   const expectedLog = {
-    ...createExpectedLog([user], maliciousLog),
-    nickname:
-      "Malicious image <img src='https://thisisabad.site/siteisfake' onerror='alert(document.cookie);'>.",
-    note: "Very malicious script <script>alert('xss');</script>"
+    ...createExpectedLog(user, maliciousLog),
+    nickname: `Malicious image <img src="https://thisisabad.site/siteisfake">.`,
+    note: `Very malicious script &lt;script&gt;alert("xss");&lt;/script&gt;`
   };
   return {
     maliciousLog,
@@ -143,8 +139,8 @@ function cleanTables(db) {
   return db.transaction(trx =>
     trx.raw(
       `TRUNCATE
-        logs,
-        users
+        users,
+        logs
       `
     )
   );
@@ -172,6 +168,7 @@ function seedMaliciousLog(db, user, log) {
 function makeAuthHeader(user, secret = process.env.JWT_SECRET) {
   const token = jwt.sign({ user_id: user.id }, secret, {
     subject: user.username,
+    expiresIn: "7d",
     algorithm: "HS256"
   });
   return `Bearer ${token}`;
